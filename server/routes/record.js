@@ -27,12 +27,51 @@ recordRoutes.route('/listings').get(async function(req, res) {
 
 // This section will help you create a new record.
 recordRoutes.route('/listings/recordSwipe').post(function(req, res) {
-    // Insert swipe informations
+    const dbConnect = dbo.getDb();
+    const matchDocument = {
+        listing_id: req.body.id,
+        last_modified: new Date(),
+        session_id: req.body.session_id,
+        direction: req.body.direction,
+    };
+
+    dbConnect
+        .collection('matches')
+        .insertOne(matchDocument, function(err, result) {
+            if (err) {
+                res.status(400).send('Error creating match document');
+            } else {
+                res.send(`Created document with id ${result.insertedId}`).status(204);
+            }
+        });
 });
 
 // This section will help you update a record by id.
 recordRoutes.route('/listings/updateLike').post(function(req, res) {
-    // Update likes
+    const dbConnect = dbo.getDb();
+    const listingQuery = { _id: req.body.id };
+    const updates = {
+        $inc: {
+            likes: 1,
+        },
+        $set: {
+            name: 'Tom',
+        },
+    };
+
+    dbConnect
+        .collection('listingsAndReviews')
+        .updateOne(listingQuery, updates, function(err, result) {
+            if (err) {
+                res
+                    .status(400)
+                    .send(`Error updating likes on listing with id ${listingQuery._id}`);
+            } else {
+                res
+                    .status(200)
+                    .send(`Updated likes on listing with id ${listingQuery._id}`);
+            }
+        });
 });
 
 // This section will help you delete a record
