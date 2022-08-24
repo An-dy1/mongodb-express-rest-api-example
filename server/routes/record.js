@@ -54,19 +54,20 @@ recordRoutes.route('/listings/updateLike').post(function(req, res) {
         $inc: {
             likes: 1,
         },
-        $set: {
-            name: 'Tom',
-        },
     };
 
     dbConnect
         .collection('listingsAndReviews')
         .updateOne(listingQuery, updates, function(err, result) {
             if (err) {
+                console.log(
+                    `Error updating likes on listing with id ${listingQuery._id}`
+                );
                 res
                     .status(400)
                     .send(`Error updating likes on listing with id ${listingQuery._id}`);
             } else {
+                console.log(`Updated likes on listing with id ${listingQuery._id}`);
                 res
                     .status(200)
                     .send(`Updated likes on listing with id ${listingQuery._id}`);
