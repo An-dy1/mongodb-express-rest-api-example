@@ -76,7 +76,20 @@ recordRoutes.route('/listings/updateLike').post(function(req, res) {
 
 // This section will help you delete a record
 recordRoutes.route('/listings/delete').delete((req, res) => {
-    // Delete documents
+    const dbConnect = dbo.getDb();
+    const listingQuery = { _id: req.body.id };
+
+    dbConnect
+        .collection('listingsAndReviews')
+        .deleteOne(listingQuery, (err, result) => {
+            if (err) {
+                res
+                    .status(400)
+                    .send(`Error deleting listing with id ${listingQuery.listing_id}`);
+            } else {
+                res.status(200).send(`Deleted listing with id ${listingQuery.id}`);
+            }
+        });
 });
 
 module.exports = recordRoutes;
